@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@600;700&family=Shadows+Into+Light&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CRAYON SCRAPBOOK BIRTHDAY SITE — v2 (bold rainbow / maximalist)
+   ------------------------------------------------------------
+   HOW TO CUSTOMIZE (search these markers):
+   [EDIT: NAME]      -> friend's name
+   [EDIT: AUDIO]     -> your song file/link in the <audio> tag
+   [EDIT: MESSAGES]  -> the three carousel messages (in <script> CONFIG)
+   [EDIT: PHOTOS]    -> replace collage placeholders with real <img> tags
+   ============================================================ */
+
+:root{
+  --pink:   #FF3D81;
+  --yellow: #FFD400;
+  --sky:    #00B4D8;
+  --green:  #4CD964;
+  --orange: #FF7A00;
+  --purple: #9B5DE5;
+  --ink:    #2B1B34;
+  --cream:  #FFF8EC;
+  --tint-hero:     #FFF8EC;
+  --tint-cake:     #E9F9FF;
+  --tint-carousel: #FFF0F7;
+  --bounce: cubic-bezier(.68,-0.6,.27,1.65);
+  --bounce-soft: cubic-bezier(.34,1.56,.64,1);
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  margin:0;
+  color:var(--ink);
+  font-family:'Fraunces', serif;
+  font-size:19px;
+  overflow-x:hidden;
+  background:var(--tint-hero);
+}
+
+h1,h2,h3,.marker{ font-family:'Fraunces', serif; font-weight:600; letter-spacing:0.3px; }
+.script{ font-family:'Shadows Into Light', cursive; font-weight:400; font-size:1.05em; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+}
+
+::selection{ background:var(--yellow); color:var(--ink); }
+a, button{ font-family:inherit; }
+:focus-visible{ outline:3px solid var(--sky); outline-offset:3px; border-radius:6px; }
+
+.section-paper{ position:relative; }
+.section-paper.hero{ background:var(--tint-hero); }
+.section-paper.cake{ background:var(--tint-cake); }
+.section-paper.carousel{ background:var(--tint-carousel); }
+
+/* soft color wash + paper grain, on every section */
+.section-paper::before{
+  content:''; position:absolute; inset:-2%; pointer-events:none; z-index:-1;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255,61,129,0.16), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(0,180,216,0.16), transparent 34%),
+    radial-gradient(circle at 82% 82%, rgba(255,212,0,0.18), transparent 34%),
+    radial-gradient(circle at 15% 85%, rgba(76,217,100,0.15), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(155,93,229,0.10), transparent 45%),
+    radial-gradient(rgba(43,27,52,0.07) 1px, transparent 1.5px);
+  background-size: auto, auto, auto, auto, auto, 16px 16px;
+  animation: wash-drift 22s ease-in-out infinite;
+}
+/* scattered confetti dots, on every section */
+.section-paper::after{
+  content:''; position:absolute; inset:-2%; pointer-events:none; z-index:-1;
+  background-image:
+    radial-gradient(circle, var(--pink) 3.5px, transparent 4px),
+    radial-gradient(circle, var(--sky) 3.5px, transparent 4px),
+    radial-gradient(circle, var(--yellow) 3.5px, transparent 4px),
+    radial-gradient(circle, var(--green) 3.5px, transparent 4px),
+    radial-gradient(circle, var(--purple) 3.5px, transparent 4px);
+  background-size: 140px 140px, 160px 160px, 130px 130px, 170px 170px, 150px 150px;
+  background-position: 10px 20px, 70px 90px, 40px 130px, 110px 30px, 130px 110px;
+  opacity:0.22;
+  animation: wash-drift 30s ease-in-out infinite reverse;
+}
+@keyframes wash-drift{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(-1.5%, 1.5%) scale(1.025); }
+}
+
+/* ---------- reusable crayon panel ---------- */
+.crayon-card{
+  background:#fff;
+  border:4px solid var(--ink);
+  border-radius: 22px 30px 24px 32px / 30px 22px 32px 24px;
+  box-shadow: 6px 6px 0 var(--ink), 11px 11px 0 var(--yellow);
+  position:relative;
+}
+
+/* washi tape */
+.washi{
+  position:absolute; width:76px; height:28px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  opacity:0.92; z-index:5;
+}
+.washi.pink{ background:repeating-linear-gradient(45deg, var(--pink), var(--pink) 7px, #ffffffb0 7px, #ffffffb0 14px); }
+.washi.sky{ background:repeating-linear-gradient(45deg, var(--sky), var(--sky) 7px, #ffffffb0 7px, #ffffffb0 14px); }
+.washi.yellow{ background:repeating-linear-gradient(-45deg, var(--yellow), var(--yellow) 7px, #ffffffb0 7px, #ffffffb0 14px); }
+.washi.green{ background:repeating-linear-gradient(-45deg, var(--green), var(--green) 7px, #ffffffb0 7px, #ffffffb0 14px); }
+
+/* ---------- scalloped sticker badge ---------- */
+.badge{
+  width:118px; height:118px; border-radius:50%;
+  border:4px solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  font-family:'Baloo 2', sans-serif; font-weight:700; font-size:0.85rem; line-height:1.15; color:var(--ink); letter-spacing:0.3px;
+  position:relative; z-index:6;
+  animation: wiggle 3.4s ease-in-out infinite;
+}
+.badge::before{
+  content:''; position:absolute; inset:7px; border-radius:50%;
+  border:2px dashed var(--ink); opacity:0.55;
+}
+.badge span{ position:relative; z-index:2; padding:0 8px; }
+.badge .badge-icon{ position:relative; z-index:2; flex-shrink:0; }
+@keyframes wiggle{ 0%,100%{ transform:rotate(-8deg);} 50%{ transform:rotate(4deg);} }
+
+/* ---------- ambient floating motes (background life) ---------- */
+.mote{
+  position:absolute; border-radius:50%; pointer-events:none; z-index:0;
+  animation: mote-float 7s ease-in-out infinite;
+}
+@keyframes mote-float{
+  0%{ transform:translateY(0) scale(1); opacity:0.25; }
+  50%{ transform:translateY(-40px) scale(1.3); opacity:0.55; }
+  100%{ transform:translateY(-80px) scale(0.9); opacity:0; }
+}
+.doodle{ position:absolute; z-index:1; pointer-events:none; animation: float-bob 4.5s ease-in-out infinite; }
+.doodle.spin{ animation: float-bob 4.5s ease-in-out infinite, spin-slow 9s linear infinite; }
+@keyframes float-bob{ 0%,100%{ transform:translateY(0) rotate(var(--r,0deg)); } 50%{ transform:translateY(-14px) rotate(var(--r,0deg)); } }
+@keyframes spin-slow{ to{ transform:rotate(360deg); } }
+
+/* ---------- torn paper divider ---------- */
+.torn{ display:block; width:100%; position:relative; z-index:2; margin-top:-2px; }
+.torn svg{ display:block; width:100%; height:56px; }
+
+/* ---------- top floating controls ---------- */
+#audio-toggle, #reset-toggle{
+  position:fixed; top:16px; z-index:80;
+  width:58px; height:58px; border-radius:50%;
+  border:4px solid var(--ink); cursor:pointer;
+  box-shadow:3px 4px 0 var(--ink);
+  font-size:22px; display:flex; align-items:center; justify-content:center;
+  transition: transform 0.3s var(--bounce-soft);
+}
+#audio-toggle{ right:16px; background:var(--pink); }
+#reset-toggle{ left:16px; background:var(--green); }
+#audio-toggle:hover, #reset-toggle:hover{ transform:scale(1.12) rotate(-8deg); }
+#audio-toggle:active, #reset-toggle:active{ transform:scale(0.92); }
+
+/* =========================================================
+   HERO
+========================================================= */
+.hero{
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:70px 16px 60px; text-align:center;
+}
+
+.hero-badge{ position:absolute; top:8%; left:6%; background:var(--yellow); transform:rotate(-10deg); }
+@media (max-width:700px){ .hero-badge{ display:none; } }
+
+.bunting{ position:absolute; top:0; left:0; width:100%; height:60px; z-index:2; }
+
+.reveal-stage{
+  position:relative; z-index:3;
+  width:min(90vw, 480px); height:min(90vw, 480px);
+  display:flex; align-items:center; justify-content:center;
+}
+.reveal-stage.tappable{ cursor:pointer; }
+.reveal-stage.tappable .bouquet-wrap{ animation: tap-pulse 2.2s ease-in-out infinite; }
+@keyframes tap-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.03); } }
+.tap-hint{
+  position:absolute; left:50%; top:104%;
+  font-family:'Shadows Into Light', cursive; font-size:1.2rem; color:var(--ink);
+  opacity:0.85; white-space:nowrap; pointer-events:none; text-align:center;
+  animation: tap-hint-bob 1.8s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+}
+@keyframes tap-hint-bob{
+  0%,100%{ transform:translate(-50%, 0); }
+  50%{ transform:translate(-50%, 8px); }
+}
+.reveal-stage.revealed .tap-hint{ opacity:0; }
+.reveal-glow{
+  position:absolute; width:135%; height:135%; left:50%; top:50%;
+  transform:translate(-50%,-50%); border-radius:50%; z-index:0;
+  background: radial-gradient(circle, rgba(255,212,0,0.35), rgba(255,111,168,0.22) 40%, transparent 72%);
+  filter:blur(26px);
+  animation: glow-pulse 5s ease-in-out infinite;
+}
+@keyframes glow-pulse{
+  0%,100%{ opacity:0.55; transform:translate(-50%,-50%) scale(1); }
+  50%{ opacity:0.85; transform:translate(-50%,-50%) scale(1.08); }
+}
+
+.baby-wrap{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  transform:scale(0.6) rotate(-6deg); opacity:0;
+  transition: transform 1.4s var(--bounce-soft) 1s, opacity 1.3s ease 1s;
+}
+.reveal-stage.revealed .baby-wrap{ transform:scale(1) rotate(0deg); opacity:1; }
+.baby-svg{ width:52%; height:52%; filter:url(#crayon-rough); }
+
+.bouquet-wrap{ position:absolute; inset:0; z-index:5; }
+.bouquet-half, .bouquet-ribbon{
+  position:absolute; left:50%; top:50%; width:92%; height:92%;
+  transform:translate(-50%,-50%);
+  transition: transform 2.3s cubic-bezier(.6,0.04,.32,1), opacity 1.7s ease;
+  filter:url(#crayon-rough);
+}
+.bouquet-wrap.open .bouquet-left{
+  transform: translate(calc(-50% - 70%), calc(-50% - 8%)) rotate(-30deg) scale(0.7);
+  opacity:0;
+}
+.bouquet-wrap.open .bouquet-right{
+  transform: translate(calc(-50% + 70%), calc(-50% - 8%)) rotate(30deg) scale(0.7);
+  opacity:0;
+}
+.bouquet-wrap.open .bouquet-ribbon{
+  transform: translate(-50%, calc(-50% + 18%)) scale(0.55);
+  opacity:0;
+  transition: transform 1.3s var(--bounce-soft), opacity 1s ease;
+}
+
+.hero-title{
+  margin:30px 0 0; display:flex; flex-wrap:wrap; justify-content:center; gap:0 2px;
+  font-family:'Bangers', cursive; font-size:clamp(2.6rem, 9vw, 5rem); line-height:1;
+}
+.hero-title .letter{
+  display:inline-block; -webkit-text-stroke:2px var(--ink); color:var(--letter-color, var(--pink));
+  text-shadow:3px 3px 0 var(--ink);
+  transform: translateY(40px) rotate(var(--r,0deg)) scale(0.4); opacity:0;
+  transition: transform 0.7s var(--bounce), opacity 0.5s ease;
+  transition-delay: var(--d, 0s);
+}
+.hero-title .letter.show{
+  transform: translateY(0) rotate(var(--r,0deg)) scale(1); opacity:1;
+  animation: letter-shake 2.6s ease-in-out infinite;
+  animation-delay: calc(var(--d, 0s) + 1.3s);
+}
+@keyframes letter-shake{
+  0%, 100%{ transform: translateY(0) rotate(var(--r,0deg)) scale(1); }
+  20%{ transform: translateY(-3px) rotate(calc(var(--r,0deg) + 4deg)) scale(1.03); }
+  40%{ transform: translateY(2px) rotate(calc(var(--r,0deg) - 5deg)) scale(0.98); }
+  60%{ transform: translateY(-2px) rotate(calc(var(--r,0deg) + 3deg)) scale(1.02); }
+  80%{ transform: translateY(2px) rotate(calc(var(--r,0deg) - 3deg)) scale(1); }
+}
+.hero-title .space{ width:0.35em; display:inline-block; }
+
+.hero-sub{
+  margin-top:14px; font-size:1.5rem; color:var(--ink);
+  opacity:0; transform:translateY(14px); transition:all 0.8s ease 0.2s;
+}
+.hero-sub.show{ opacity:1; transform:translateY(0); }
+
+.scroll-cue{
+  margin-top:46px; font-family:'Shadows Into Light', cursive; font-size:1.4rem;
+  animation: bob 1.8s ease-in-out infinite; opacity:0.9;
+}
+@keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(8px);} }
+
+/* confetti */
+.confetti-piece{ position:fixed; top:-20px; z-index:90; pointer-events:none; animation-timing-function:linear; animation-fill-mode:forwards; }
+@keyframes confetti-fall{
+  0%{ transform:translate(0,0) rotate(0deg); }
+  30%{ transform:translate(30px, 30vh) rotate(200deg); }
+  60%{ transform:translate(-25px, 65vh) rotate(430deg); }
+  100%{ transform:translate(15px, 105vh) rotate(700deg); opacity:0.3; }
+}
+
+/* =========================================================
+   CAKE SECTION
+========================================================= */
+.cake-section{
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:70px 16px; text-align:center;
+}
+.cake-heading{ color:var(--orange); text-shadow:2px 2px 0 var(--ink), 4px 4px 0 var(--yellow); margin-bottom:34px; font-size:clamp(2rem,6vw,3rem); }
+
+.cake-stage{
+  position:relative;
+  opacity:0; transform:translateY(70px) rotate(-6deg) scale(0.8);
+  transition: all 1.1s var(--bounce);
+}
+.cake-stage.in-view{ opacity:1; transform:translateY(0) rotate(0) scale(1); }
+
+.cake-wish-badge{ position:absolute; top:-20px; right:-6%; background:var(--pink); color:#fff; transform:rotate(10deg); z-index:8; }
+@media (max-width:600px){ .cake-wish-badge{ right:-2%; width:96px; height:96px; font-size:0.72rem; } }
+
+.cake-btn{ width:min(72vw, 360px); cursor:pointer; background:none; border:none; padding:0; display:block; margin:0 auto; }
+.cake-svg{ width:100%; height:auto; filter:url(#crayon-rough); }
+
+.flame{ transform-origin:center bottom; transition: opacity 0.4s ease, transform 0.4s ease; animation: flicker 0.6s ease-in-out infinite alternate; }
+@keyframes flicker{ from{ transform:scale(1) rotate(-3deg);} to{ transform:scale(1.12) rotate(3deg);} }
+.blown .flame{ opacity:0; transform:scale(0.2) translateY(6px); animation:none; }
+
+.smoke-puff{ position:absolute; border-radius:50%; background:rgba(140,140,150,0.55); pointer-events:none; animation: smoke-rise 1.4s ease-out forwards; z-index:70; }
+@keyframes smoke-rise{ 0%{ opacity:0.65; transform:translateY(0) scale(0.6);} 100%{ opacity:0; transform:translateY(-70px) scale(1.8);} }
+
+.cake-caption{ margin-top:26px; font-family:'Shadows Into Light', cursive; font-size:2.1rem; color:var(--purple); }
+.cake-caption .after{ display:none; }
+.blown-wrap .cake-caption .before{ display:none; }
+.blown-wrap .cake-caption .after{ display:inline; }
+
+/* =========================================================
+   CAROUSEL SECTION
+========================================================= */
+.carousel-section{ min-height:100vh; width:100%; padding:70px 16px 100px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.carousel-heading{ width:100%; font-size:clamp(2rem,5.5vw,2.8rem); color:var(--sky); text-shadow:2px 2px 0 var(--ink), 4px 4px 0 var(--pink); margin:0 0 36px; text-align:center; }
+
+.carousel{ position:relative; width:min(92vw, 640px); max-width:640px; margin:0 auto; z-index:3; }
+.carousel-track{ overflow:hidden; border-radius:26px; width:100%; }
+.carousel-slides{ display:flex; width:100%; transition: transform 0.6s var(--bounce); }
+.slide{ min-width:100%; min-height:480px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px 24px; text-align:center; margin:0 auto; }
+.slide-illustration{ width:min(62vw, 270px); max-width:100%; margin:0 auto; filter:url(#crayon-rough); overflow:visible; }
+.slide-message{ width:100%; font-size:1.3rem; max-width:46ch; margin:0 auto; text-align:center; }
+
+.carousel-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:52px; height:52px; border-radius:50%;
+  background:var(--yellow); border:4px solid var(--ink);
+  box-shadow:3px 4px 0 var(--ink); font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: transform 0.25s var(--bounce-soft);
+}
+.carousel-nav:hover{ background:var(--orange); transform:translateY(-50%) scale(1.1); }
+.carousel-nav.prev{ left:-16px; } .carousel-nav.next{ right:-16px; }
+@media (max-width:560px){ .carousel-nav.prev{ left:-8px; } .carousel-nav.next{ right:-8px; } }
+
+.carousel-dots{ display:flex; gap:12px; justify-content:center; margin-top:22px; }
+.dot{ width:16px; height:16px; border-radius:50%; background:#fff; border:2.5px solid var(--ink); cursor:pointer; transition:transform 0.2s var(--bounce-soft); }
+.dot.active{ background:var(--pink); transform:scale(1.25); }
+
+.corner-star{ position:absolute; width:34px; z-index:8; animation:wiggle 2.6s ease-in-out infinite; }
+
+/* --- superhero slide --- */
+.superhero-slide .slide-illustration{ animation: hero-fly 4.2s ease-in-out infinite alternate; }
+@keyframes hero-fly{
+  0%{   transform: translate(-16%, 8%)  rotate(-9deg); }
+  50%{  transform: translate(0%, -6%)   rotate(2deg); }
+  100%{ transform: translate(16%, 8%)   rotate(9deg); }
+}
+.hero-cape{ transform-origin: 70px 60px; animation: cape-flap 0.9s ease-in-out infinite; }
+@keyframes cape-flap{ 0%,100%{ transform:skewX(0deg) rotate(0deg);} 50%{ transform:skewX(18deg) rotate(8deg);} }
+.hero-star{ animation: twinkle 1.3s ease-in-out infinite; transform-origin:center; }
+.hero-star:nth-child(2){ animation-delay:0.3s; } .hero-star:nth-child(3){ animation-delay:0.6s; }
+@keyframes twinkle{ 0%,100%{ transform:scale(0.6); opacity:0.5;} 50%{ transform:scale(1.3); opacity:1;} }
+
+/* --- two heads slide --- */
+.pop-heart{ animation: heart-pop 1.7s ease-in-out infinite; transform-origin:center; }
+.pop-heart:nth-child(2){ animation-delay:0.35s; } .pop-heart:nth-child(3){ animation-delay:0.7s; } .pop-heart:nth-child(4){ animation-delay:1.05s; }
+@keyframes heart-pop{
+  0%{ transform:translateY(10px) scale(0.3) rotate(-8deg); opacity:0; }
+  30%{ opacity:1; }
+  70%{ transform:translateY(-42px) scale(1.15) rotate(8deg); opacity:1; }
+  100%{ transform:translateY(-58px) scale(0.9) rotate(0deg); opacity:0; }
+}
+
+/* --- collage slide --- */
+.collage-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; width:100%; max-width:420px; margin:0 auto; }
+.collage-slot{
+  aspect-ratio:1/1; background:var(--cream); border:3px solid var(--ink); border-radius:8px;
+  display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:#9a8aa0;
+  overflow:hidden; transform:rotate(var(--r,0deg)); box-shadow:3px 4px 0 var(--ink); position:relative;
+}
+.collage-slot:nth-child(1){ --r:-5deg; } .collage-slot:nth-child(2){ --r:4deg; } .collage-slot:nth-child(3){ --r:-3deg; }
+.collage-slot:nth-child(4){ --r:3deg; } .collage-slot:nth-child(5){ --r:-4deg; } .collage-slot:nth-child(6){ --r:5deg; }
+.collage-slot img{ width:100%; height:100%; object-fit:cover; }
+
+.collage-upload{
+  margin-top:6px; font-family:'Shadows Into Light', cursive; font-size:1.25rem;
+  background:var(--green); border:3px solid var(--ink); padding:9px 22px; border-radius:30px; cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink); transition:transform 0.2s var(--bounce-soft);
+}
+.collage-upload:hover{ transform:scale(1.06) rotate(-2deg); }
+
+footer{ text-align:center; padding:34px 16px 54px; font-family:'Shadows Into Light', cursive; font-size:1.3rem; color:#8a7f8a; background:var(--tint-carousel); position:relative; z-index:2; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="crayon-rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5"/>
+    </filter>
+    <symbol id="doodle-star" viewBox="0 0 40 40"><path d="M20 2 L24 15 L38 15 L27 23 L31 37 L20 28 L9 37 L13 23 L2 15 L16 15 Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/></symbol>
+    <symbol id="doodle-swirl" viewBox="0 0 40 40"><path d="M5 22 Q3 6 20 6 Q36 6 35 20 Q34 30 24 29 Q17 28 18 21" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="doodle-heart" viewBox="0 0 40 40"><path d="M20 34 C2 22 2 8 14 8 C18 8 20 11 20 11 C20 11 22 8 26 8 C38 8 38 22 20 34Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/></symbol>
+    <symbol id="doodle-bolt" viewBox="0 0 40 40"><path d="M22 2 L8 22 L18 22 L14 38 L34 16 L22 16 Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/></symbol>
+    <symbol id="doodle-sparkle" viewBox="0 0 40 40"><path d="M20 2 L23 17 L38 20 L23 23 L20 38 L17 23 L2 20 L17 17 Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.2"/></symbol>
+    <symbol id="doodle-gift" viewBox="0 0 40 40"><rect x="6" y="16" width="28" height="20" fill="currentColor" stroke="var(--ink)" stroke-width="2"/><rect x="17" y="16" width="6" height="20" fill="var(--ink)" opacity="0.25"/><path d="M20 16 Q10 5 5 13 Q10 18 20 16Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/><path d="M20 16 Q30 5 35 13 Q30 18 20 16Z" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/></symbol>
+    <symbol id="doodle-partyhat" viewBox="0 0 40 40"><path d="M20 4 L34 34 L6 34 Z" fill="currentColor" stroke="var(--ink)" stroke-width="2"/><circle cx="20" cy="4" r="3" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="16" cy="20" r="2" fill="#fff" opacity="0.7"/><circle cx="24" cy="26" r="2" fill="#fff" opacity="0.7"/></symbol>
+    <symbol id="doodle-balloon" viewBox="0 0 40 62"><ellipse cx="20" cy="20" rx="16" ry="19" fill="currentColor" stroke="var(--ink)" stroke-width="2"/><path d="M17 39 Q20 43 23 39" fill="currentColor" stroke="var(--ink)" stroke-width="1.5"/><path d="M20 41 Q12 50 20 60" fill="none" stroke="var(--ink)" stroke-width="1.5"/></symbol>
+    <symbol id="flower-head" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="26" rx="14" ry="21" fill="currentColor"/>
+      <ellipse cx="50" cy="26" rx="14" ry="21" fill="currentColor" transform="rotate(72 50 50)"/>
+      <ellipse cx="50" cy="26" rx="14" ry="21" fill="currentColor" transform="rotate(144 50 50)"/>
+      <ellipse cx="50" cy="26" rx="14" ry="21" fill="currentColor" transform="rotate(216 50 50)"/>
+      <ellipse cx="50" cy="26" rx="14" ry="21" fill="currentColor" transform="rotate(288 50 50)"/>
+      <circle cx="50" cy="50" r="13" fill="var(--yellow)" stroke="var(--ink)" stroke-width="2"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- [EDIT: AUDIO] Replace the src below with your song file or link -->
+<audio id="bgm" loop preload="none">
+  <source src="REPLACE_WITH_YOUR_AUDIO_FILE.mp3" type="audio/mpeg">
+</audio>
+<button id="audio-toggle" aria-label="Play birthday song" title="Play birthday song">
+  <svg id="audio-icon" width="22" height="22" viewBox="0 0 24 24"><path d="M9 17V5l10-2v12" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="17" r="3" fill="var(--ink)"/><circle cx="16" cy="15" r="3" fill="var(--ink)"/></svg>
+</button>
+<button id="reset-toggle" aria-label="Replay all animations" title="Replay all animations">
+  <svg width="24" height="24" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M20 3v5h-5" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- ================= HERO ================= -->
+<section class="hero section-paper hero" id="hero">
+  <div class="badge hero-badge">
+    <svg class="badge-icon" width="13" height="13" viewBox="0 0 40 40"><use href="#doodle-star" style="color:var(--ink)"/></svg>
+    <span>IT'S YOUR<br>DAY!</span>
+    <svg class="badge-icon" width="13" height="13" viewBox="0 0 40 40"><use href="#doodle-star" style="color:var(--ink)"/></svg>
+  </div>
+
+  <div class="mote" style="left:6%; top:60%; width:10px; height:10px; background:var(--pink); animation-delay:0s;"></div>
+  <div class="mote" style="left:92%; top:65%; width:8px; height:8px; background:var(--yellow); animation-delay:1.6s;"></div>
+  <div class="mote" style="left:12%; top:75%; width:7px; height:7px; background:var(--sky); animation-delay:3.2s;"></div>
+  <div class="mote" style="left:88%; top:45%; width:9px; height:9px; background:var(--green); animation-delay:2.1s;"></div>
+
+  <svg class="bunting" viewBox="0 0 800 90" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <clipPath id="clip-flag2"><path d="M122.5,19 L172.5,19 L147.5,77 Z"/></clipPath>
+      <clipPath id="clip-flag4"><path d="M302.5,27 L352.5,27 L327.5,85 Z"/></clipPath>
+      <clipPath id="clip-flag6"><path d="M482.5,26 L532.5,26 L507.5,84 Z"/></clipPath>
+      <clipPath id="clip-flag8"><path d="M662.5,17 L712.5,17 L687.5,75 Z"/></clipPath>
+    </defs>
+    <path d="M0,6 Q400,50 800,6" fill="none" stroke="#2B1B34" stroke-width="3"/>
+    <!-- each flag's top edge sits exactly on the string curve above -->
+    <g>
+      <path d="M32.5,12 L82.5,12 L57.5,70 Z" fill="var(--pink)" stroke="#2B1B34" stroke-width="2.5"/>
+      <circle cx="47" cy="28" r="3.4" fill="#fff"/><circle cx="57.5" cy="38" r="3.4" fill="#fff"/><circle cx="68" cy="28" r="3.4" fill="#fff"/>
+    </g>
+    <g>
+      <path d="M122.5,19 L172.5,19 L147.5,77 Z" fill="var(--yellow)" stroke="#2B1B34" stroke-width="2.5"/>
+      <path d="M130,26 L165,54 M165,26 L130,54" stroke="#2B1B34" stroke-width="2" opacity="0.5" clip-path="url(#clip-flag2)"/>
+    </g>
+    <g>
+      <path d="M212.5,24 L262.5,24 L237.5,82 Z" fill="var(--sky)" stroke="#2B1B34" stroke-width="2.5"/>
+      <circle cx="227" cy="40" r="3.4" fill="#fff"/><circle cx="237.5" cy="50" r="3.4" fill="#fff"/><circle cx="248" cy="40" r="3.4" fill="#fff"/>
+    </g>
+    <g>
+      <path d="M302.5,27 L352.5,27 L327.5,85 Z" fill="var(--green)" stroke="#2B1B34" stroke-width="2.5"/>
+      <path d="M310,34 L345,62 M345,34 L310,62" stroke="#2B1B34" stroke-width="2" opacity="0.5" clip-path="url(#clip-flag4)"/>
+    </g>
+    <g>
+      <path d="M392.5,28 L442.5,28 L417.5,86 Z" fill="var(--purple)" stroke="#2B1B34" stroke-width="2.5"/>
+      <circle cx="407" cy="44" r="3.4" fill="#fff"/><circle cx="417.5" cy="54" r="3.4" fill="#fff"/><circle cx="428" cy="44" r="3.4" fill="#fff"/>
+    </g>
+    <g>
+      <path d="M482.5,26 L532.5,26 L507.5,84 Z" fill="var(--orange)" stroke="#2B1B34" stroke-width="2.5"/>
+      <path d="M490,33 L525,61 M525,33 L490,61" stroke="#2B1B34" stroke-width="2" opacity="0.5" clip-path="url(#clip-flag6)"/>
+    </g>
+    <g>
+      <path d="M572.5,23 L622.5,23 L597.5,81 Z" fill="var(--pink)" stroke="#2B1B34" stroke-width="2.5"/>
+      <circle cx="587" cy="39" r="3.4" fill="#fff"/><circle cx="597.5" cy="49" r="3.4" fill="#fff"/><circle cx="608" cy="39" r="3.4" fill="#fff"/>
+    </g>
+    <g>
+      <path d="M662.5,17 L712.5,17 L687.5,75 Z" fill="var(--yellow)" stroke="#2B1B34" stroke-width="2.5"/>
+      <path d="M670,24 L705,52 M705,24 L670,52" stroke="#2B1B34" stroke-width="2" opacity="0.5" clip-path="url(#clip-flag8)"/>
+    </g>
+    <g>
+      <path d="M752.5,8 L802.5,8 L777.5,66 Z" fill="var(--sky)" stroke="#2B1B34" stroke-width="2.5"/>
+      <circle cx="767" cy="24" r="3.4" fill="#fff"/><circle cx="777.5" cy="34" r="3.4" fill="#fff"/><circle cx="788" cy="24" r="3.4" fill="#fff"/>
+    </g>
+  </svg>
+
+  <div class="reveal-stage" id="reveal-stage">
+    <div class="reveal-glow"></div>
+    <p class="tap-hint script">tap the bouquet</p>
+
+    <!-- doodles ringed close around the baby, spaced so none overlap -->
+    <svg class="doodle spin" style="left:-8%; top:4%; width:34px; color:var(--sky);" viewBox="0 0 40 40"><use href="#doodle-swirl"/></svg>
+    <svg class="doodle spin" style="left:100%; top:4%; width:26px; color:var(--yellow);" viewBox="0 0 40 40"><use href="#doodle-sparkle"/></svg>
+    <svg class="doodle" style="left:-13%; top:44%; width:32px; color:var(--purple); --r:-12deg;" viewBox="0 0 40 40"><use href="#doodle-heart"/></svg>
+    <svg class="doodle" style="left:105%; top:44%; width:30px; color:var(--orange); --r:18deg;" viewBox="0 0 40 40"><use href="#doodle-bolt"/></svg>
+    <svg class="doodle" style="left:-6%; top:82%; width:34px; color:var(--purple); --r:-14deg;" viewBox="0 0 40 40"><use href="#doodle-gift"/></svg>
+    <svg class="doodle" style="left:98%; top:82%; width:32px; color:var(--orange); --r:12deg;" viewBox="0 0 40 40"><use href="#doodle-partyhat"/></svg>
+    <svg class="doodle" style="left:22%; top:-9%; width:26px; color:var(--green); --r:-6deg;" viewBox="0 0 40 40"><use href="#doodle-star"/></svg>
+    <svg class="doodle" style="left:70%; top:2%; width:36px; color:var(--pink); --r:-8deg;" viewBox="0 0 40 62"><use href="#doodle-balloon"/></svg>
+
+    <div class="baby-wrap">
+      <svg class="baby-svg" viewBox="0 0 200 200">
+        <!-- swaddle bundle -->
+        <path d="M60 108 Q100 88 140 108 Q152 148 140 186 Q100 202 60 186 Q48 148 60 108 Z" fill="#BFE3F5" stroke="#2B1B34" stroke-width="3"/>
+        <path d="M55 114 Q100 98 145 114 L145 122 Q100 106 55 122 Z" fill="var(--orange)" stroke="#2B1B34" stroke-width="2"/>
+        <path d="M63 142 Q100 154 137 142" fill="none" stroke="#2B1B34" stroke-width="2" opacity="0.35"/>
+        <path d="M60 166 Q100 179 140 166" fill="none" stroke="#2B1B34" stroke-width="2" opacity="0.35"/>
+        <!-- face -->
+        <path d="M78 68 Q100 52 122 68" fill="none" stroke="#7A4A2B" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="100" cy="95" r="34" fill="#FFDFB8" stroke="#2B1B34" stroke-width="3"/>
+        <path d="M87 93 q4 -6 8 0" fill="none" stroke="#2B1B34" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M105 93 q4 -6 8 0" fill="none" stroke="#2B1B34" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="83" cy="103" r="5" fill="#FF6FA8" opacity="0.6"/>
+        <circle cx="117" cy="103" r="5" fill="#FF6FA8" opacity="0.6"/>
+        <!-- pacifier -->
+        <circle cx="100" cy="105" r="4" fill="none" stroke="#2B1B34" stroke-width="2"/>
+        <ellipse cx="100" cy="112" rx="9" ry="6" fill="var(--purple)" stroke="#2B1B34" stroke-width="2"/>
+        <circle cx="100" cy="118" r="3.5" fill="#FFDFB8" stroke="#2B1B34" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <div class="bouquet-wrap" id="flower-curtain">
+      <svg class="bouquet-half bouquet-left" viewBox="0 0 300 340">
+        <!-- stems (left) -->
+        <path d="M150 305 C142 260 122 222 92 192" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M150 305 C150 240 150 195 150 155" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M150 305 C133 252 108 232 72 218" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <!-- leaf (left) -->
+        <path d="M110 210 Q90 195 100 175 Q125 185 110 210Z" fill="#5fae4f" stroke="#2B1B34" stroke-width="2"/>
+        <!-- flowers (left) -->
+        <use href="#flower-head" x="20"  y="145" width="88"  height="88"  style="color:var(--sky)"/>
+        <use href="#flower-head" x="70"  y="95"  width="98"  height="98"  style="color:var(--pink)"/>
+        <use href="#flower-head" x="55"  y="45"  width="80"  height="80"  style="color:var(--green)"/>
+        <use href="#flower-head" x="105" y="150" width="102" height="102" style="color:var(--yellow)"/>
+      </svg>
+      <svg class="bouquet-half bouquet-right" viewBox="0 0 300 340">
+        <!-- stems (right) -->
+        <path d="M150 305 C155 250 172 212 198 178" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M150 305 C168 255 202 236 228 208" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M150 305 C151 230 153 150 154 60" fill="none" stroke="#4a8a3f" stroke-width="5" stroke-linecap="round"/>
+        <!-- leaf (right) -->
+        <path d="M190 205 Q212 190 202 168 Q176 180 190 205Z" fill="#5fae4f" stroke="#2B1B34" stroke-width="2"/>
+        <!-- flowers (right) -->
+        <use href="#flower-head" x="185" y="140" width="92"  height="92"  style="color:var(--orange)"/>
+        <use href="#flower-head" x="150" y="90"  width="96"  height="96"  style="color:var(--purple)"/>
+        <use href="#flower-head" x="175" y="40"  width="78"  height="78"  style="color:var(--pink)"/>
+        <use href="#flower-head" x="118" y="15"  width="72"  height="72"  style="color:var(--sky)"/>
+      </svg>
+      <svg class="bouquet-ribbon" viewBox="0 0 300 340">
+        <path d="M150 292 L118 326 L150 308 L182 326 Z" fill="var(--pink)" stroke="#2B1B34" stroke-width="3"/>
+        <circle cx="150" cy="300" r="9" fill="var(--yellow)" stroke="#2B1B34" stroke-width="2.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- [EDIT: NAME] the JS below splits this text into rainbow sticker letters -->
+  <h1 class="hero-title" id="hero-title" data-text="Happy Birthday, Rohan!"></h1>
+  <p class="hero-sub script" id="hero-sub">a whole scrapbook of love, just for you</p>
+  <p class="scroll-cue">↓ keep scrolling ↓</p>
+</section>
+
+<div class="torn"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C50,45 100,0 150,25 C200,50 250,5 300,30 C350,55 400,10 450,35 C500,60 550,15 600,40 C650,10 700,50 750,20 C800,50 850,5 900,30 C950,55 1000,10 1050,35 C1100,60 1150,15 1200,40 L1200,60 L0,60 Z" fill="#E9F9FF"/></svg></div>
+
+<!-- ================= CAKE ================= -->
+<section class="cake-section section-paper cake" id="cake-section">
+  <div class="mote" style="left:5%; top:70%; width:9px; height:9px; background:var(--purple); animation-delay:0.5s;"></div>
+  <div class="mote" style="left:93%; top:30%; width:8px; height:8px; background:var(--pink); animation-delay:2.4s;"></div>
+  <div class="mote" style="left:90%; top:70%; width:7px; height:7px; background:var(--yellow); animation-delay:4s;"></div>
+
+  <svg class="doodle" style="top:8%; left:8%; width:32px; color:var(--pink); --r:-10deg;" viewBox="0 0 40 40"><use href="#doodle-star"/></svg>
+  <svg class="doodle spin" style="bottom:10%; right:9%; width:36px; color:var(--purple);" viewBox="0 0 40 40"><use href="#doodle-swirl"/></svg>
+  <svg class="doodle" style="top:14%; right:14%; width:26px; color:var(--green); --r:15deg;" viewBox="0 0 40 40"><use href="#doodle-heart"/></svg>
+
+  <h2 class="cake-heading marker">make a wish!</h2>
+
+  <div class="cake-stage" id="cake-stage">
+    <div class="badge cake-wish-badge">
+      <svg class="badge-icon" width="13" height="13" viewBox="0 0 40 40"><use href="#doodle-sparkle" style="color:#fff"/></svg>
+      <span>MAKE A<br>WISH</span>
+      <svg class="badge-icon" width="13" height="13" viewBox="0 0 40 40"><use href="#doodle-sparkle" style="color:#fff"/></svg>
+    </div>
+    <button class="cake-btn" id="cake-btn" aria-label="Click to blow out the candles">
+      <svg class="cake-svg" id="cake-svg" viewBox="0 0 300 260">
+        <ellipse cx="150" cy="230" rx="120" ry="20" fill="#2B1B34" opacity="0.12"/>
+        <rect x="50" y="150" width="200" height="72" rx="16" fill="#FF3D81" stroke="#2B1B34" stroke-width="4"/>
+        <path d="M50 160 q20 -16 40 0 q20 -16 40 0 q20 -16 40 0 q20 -16 40 0 q20 -16 40 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+        <rect x="78" y="88" width="144" height="66" rx="14" fill="#00B4D8" stroke="#2B1B34" stroke-width="4"/>
+        <path d="M78 98 q18 -13 36 0 q18 -13 36 0 q18 -13 36 0 q18 -13 36 0" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="95" cy="205" r="7" fill="#FFD400"/><circle cx="125" cy="200" r="7" fill="#4CD964"/><circle cx="160" cy="208" r="7" fill="#9B5DE5"/>
+        <circle cx="195" cy="200" r="7" fill="#FF7A00"/><circle cx="225" cy="206" r="7" fill="#FFD400"/>
+        <circle cx="105" cy="118" r="6" fill="#FFD400"/><circle cx="150" cy="112" r="6" fill="#FF3D81"/><circle cx="195" cy="118" r="6" fill="#4CD964"/>
+
+        <g id="candle1"><rect x="103" y="55" width="12" height="34" fill="#00B4D8" stroke="#2B1B34" stroke-width="2"/><path class="flame" d="M109 55 q-9 -13 0 -24 q9 11 0 24" fill="#FF7A00"/></g>
+        <g id="candle2"><rect x="144" y="46" width="12" height="43" fill="#FF3D81" stroke="#2B1B34" stroke-width="2"/><path class="flame" d="M150 46 q-9 -13 0 -24 q9 11 0 24" fill="#FFD400"/></g>
+        <g id="candle3"><rect x="185" y="55" width="12" height="34" fill="#4CD964" stroke="#2B1B34" stroke-width="2"/><path class="flame" d="M191 55 q-9 -13 0 -24 q9 11 0 24" fill="#FF7A00"/></g>
+      </svg>
+    </button>
+    <p class="cake-caption">
+      <span class="before script">click to blow!
+        <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-3px"><rect x="10" y="9" width="4" height="11" rx="1.5" fill="var(--sky)" stroke="var(--ink)" stroke-width="1.5"/><path d="M12 8 Q9 4 12 0 Q15 4 12 8Z" fill="var(--orange)" stroke="var(--ink)" stroke-width="1"/></svg>
+      </span>
+      <span class="after script">yay, happy birthday!!
+        <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:-4px"><use href="#doodle-sparkle" style="color:var(--pink)"/></svg>
+      </span>
+    </p>
+  </div>
+</section>
+
+<div class="torn"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C50,45 100,0 150,25 C200,50 250,5 300,30 C350,55 400,10 450,35 C500,60 550,15 600,40 C650,10 700,50 750,20 C800,50 850,5 900,30 C950,55 1000,10 1050,35 C1100,60 1150,15 1200,40 L1200,60 L0,60 Z" fill="#FFF0F7"/></svg></div>
+
+<!-- ================= CAROUSEL ================= -->
+<section class="carousel-section section-paper carousel" id="carousel-section">
+  <div class="mote" style="left:4%; top:25%; width:8px; height:8px; background:var(--sky); animation-delay:1s;"></div>
+  <div class="mote" style="left:95%; top:20%; width:9px; height:9px; background:var(--green); animation-delay:3s;"></div>
+  <div class="mote" style="left:6%; top:80%; width:7px; height:7px; background:var(--orange); animation-delay:5s;"></div>
+
+  <svg class="doodle" style="top:6%; left:6%; width:30px; color:var(--sky); --r:-8deg;" viewBox="0 0 40 40"><use href="#doodle-bolt"/></svg>
+  <svg class="doodle" style="bottom:8%; right:7%; width:32px; color:var(--orange); --r:12deg;" viewBox="0 0 40 40"><use href="#doodle-star"/></svg>
+
+  <h2 class="carousel-heading marker">a few little notes</h2>
+
+  <div class="carousel">
+    <svg class="corner-star" style="top:-14px; left:-10px; color:var(--yellow);" viewBox="0 0 40 40"><use href="#doodle-star"/></svg>
+    <svg class="corner-star" style="bottom:-14px; right:-10px; color:var(--pink);" viewBox="0 0 40 40"><use href="#doodle-star"/></svg>
+
+    <div class="carousel-track">
+      <div class="carousel-slides" id="carousel-slides">
+
+        <!-- SLIDE 1: superhero -->
+        <div class="slide crayon-card superhero-slide">
+          <div class="washi pink" style="top:-14px; left:20px; transform:rotate(-6deg);"></div>
+          <div class="washi sky" style="top:-14px; right:20px; transform:rotate(5deg);"></div>
+          <svg class="slide-illustration" viewBox="0 0 200 200">
+            <path class="hero-star" d="M40 40 l4 10 10 2 -8 7 2 10 -8 -6 -8 6 2 -10 -8 -7 10 -2z" fill="var(--yellow)" stroke="#2B1B34" stroke-width="2"/>
+            <path class="hero-star" d="M170 50 l3 8 8 2 -6 6 1 8 -6 -5 -6 5 1 -8 -6 -6 8 -2z" fill="var(--sky)" stroke="#2B1B34" stroke-width="2"/>
+            <path class="hero-star" d="M160 150 l3 8 8 2 -6 6 1 8 -6 -5 -6 5 1 -8 -6 -6 8 -2z" fill="var(--pink)" stroke="#2B1B34" stroke-width="2"/>
+            <path class="hero-cape" d="M85 70 Q60 130 90 170 L110 150 Q120 120 115 75 Z" fill="var(--pink)" stroke="#2B1B34" stroke-width="3"/>
+            <circle cx="100" cy="70" r="30" fill="#FFDFB8" stroke="#2B1B34" stroke-width="3"/>
+            <!-- domino eye-mask -->
+            <path d="M68 60 Q72 48 84 56 Q100 47 116 56 Q128 48 132 60 Q126 82 100 79 Q74 82 68 60 Z" fill="var(--purple)" stroke="#2B1B34" stroke-width="2.5"/>
+            <ellipse cx="87" cy="68" rx="9" ry="6.5" fill="#fff"/>
+            <ellipse cx="113" cy="68" rx="9" ry="6.5" fill="#fff"/>
+            <circle cx="89" cy="69" r="3.6" fill="#2B1B34"/><circle cx="111" cy="69" r="3.6" fill="#2B1B34"/>
+            <path d="M88 84 Q100 92 112 84" fill="none" stroke="#2B1B34" stroke-width="3" stroke-linecap="round"/>
+            <rect x="80" y="98" width="40" height="55" rx="10" fill="var(--sky)" stroke="#2B1B34" stroke-width="3"/>
+            <circle cx="100" cy="118" r="10" fill="var(--yellow)" stroke="#2B1B34" stroke-width="2"/>
+            <rect x="55" y="100" width="20" height="14" rx="6" fill="#FFDFB8" stroke="#2B1B34" stroke-width="2" transform="rotate(-25 65 107)"/>
+          </svg>
+          <p class="slide-message script" data-msg-slot="0"><!-- [EDIT: MESSAGES] --></p>
+        </div>
+
+        <!-- SLIDE 2: two heads + heart -->
+        <div class="slide crayon-card">
+          <div class="washi yellow" style="top:-14px; left:20px; transform:rotate(-5deg);"></div>
+          <div class="washi green" style="top:-14px; right:20px; transform:rotate(6deg);"></div>
+          <svg class="slide-illustration" viewBox="0 0 220 160">
+            <circle cx="55" cy="90" r="42" fill="#FFDFB8" stroke="#2B1B34" stroke-width="3"/>
+            <path d="M18 82 Q55 30 92 82 Q90 60 55 55 Q20 60 18 82" fill="#5A3A22" stroke="#2B1B34" stroke-width="2"/>
+            <circle cx="42" cy="92" r="4" fill="#2B1B34"/><circle cx="66" cy="92" r="4" fill="#2B1B34"/>
+            <path d="M42 108 Q55 116 66 108" fill="none" stroke="#2B1B34" stroke-width="3" stroke-linecap="round"/>
+
+            <circle cx="165" cy="90" r="42" fill="#FFE3CF" stroke="#2B1B34" stroke-width="3"/>
+            <path d="M126 78 Q165 32 204 78 Q206 90 198 96 Q198 60 165 58 Q132 60 132 96 Q124 90 126 78" fill="#7A4A2B" stroke="#2B1B34" stroke-width="2"/>
+            <circle cx="150" cy="60" r="7" fill="var(--pink)" stroke="#2B1B34" stroke-width="1.5"/><circle cx="180" cy="60" r="7" fill="var(--pink)" stroke="#2B1B34" stroke-width="1.5"/>
+            <circle cx="152" cy="92" r="4" fill="#2B1B34"/><circle cx="176" cy="92" r="4" fill="#2B1B34"/>
+            <path d="M152 108 Q165 116 176 108" fill="none" stroke="#2B1B34" stroke-width="3" stroke-linecap="round"/>
+
+            <path class="pop-heart" d="M110 70 c-8 -14 -30 -6 -18 12 c6 9 18 15 18 15 c0 0 12 -6 18 -15 c12 -18 -10 -26 -18 -12z" fill="var(--pink)" stroke="#2B1B34" stroke-width="2"/>
+            <path class="pop-heart" d="M108 55 c-6 -10 -22 -4 -13 9 c4 7 13 11 13 11 c0 0 9 -4 13 -11 c9 -13 -7 -19 -13 -9z" fill="var(--orange)" stroke="#2B1B34" stroke-width="2"/>
+            <path class="pop-heart" d="M112 90 c-6 -10 -22 -4 -13 9 c4 7 13 11 13 11 c0 0 9 -4 13 -11 c9 -13 -7 -19 -13 -9z" fill="var(--purple)" stroke="#2B1B34" stroke-width="2"/>
+          </svg>
+          <p class="slide-message script" data-msg-slot="1"><!-- [EDIT: MESSAGES] --></p>
+        </div>
+
+        <!-- SLIDE 3: photo collage -->
+        <div class="slide crayon-card">
+          <div class="washi sky" style="top:-14px; left:20px; transform:rotate(-6deg);"></div>
+          <div class="washi pink" style="top:-14px; right:20px; transform:rotate(5deg);"></div>
+          <p class="slide-message script" data-msg-slot="2"><!-- [EDIT: MESSAGES] --></p>
+          <div class="collage-grid" id="collage-grid">
+            <!-- [EDIT: PHOTOS] Replace slot contents with: <img src="your-photo.jpg" alt=""> -->
+            <div class="collage-slot">photo</div>
+            <div class="collage-slot">photo</div>
+            <div class="collage-slot">photo</div>
+            <div class="collage-slot">photo</div>
+            <div class="collage-slot">photo</div>
+            <div class="collage-slot">photo</div>
+          </div>
+          <label class="collage-upload">
+            add photos
+            <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-3px"><rect x="3" y="7" width="18" height="13" rx="2" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="12" cy="13.5" r="3.4" fill="none" stroke="var(--ink)" stroke-width="2"/><rect x="8" y="4" width="8" height="3" rx="1" fill="var(--ink)"/></svg>
+            <input type="file" id="collage-input" accept="image/*" multiple style="display:none">
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="carousel-nav prev" id="carousel-prev" aria-label="Previous message">‹</button>
+    <button class="carousel-nav next" id="carousel-next" aria-label="Next message">›</button>
+  </div>
+
+  <div class="carousel-dots" id="carousel-dots"></div>
+</section>
+
+<footer>made with <svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px"><rect x="4" y="9" width="14" height="6" rx="1.5" transform="rotate(-15 11 12)" fill="var(--pink)" stroke="var(--ink)" stroke-width="1.5"/><path d="M18 9 L21 12 L18 15 Z" transform="rotate(-15 18 12)" fill="#FFDFB8" stroke="var(--ink)" stroke-width="1.5"/></svg> &amp; love, just for you</footer>
+
+<script>
+const CONFIG = {
+  // [EDIT: MESSAGES] one message per carousel slide
+  messages: [
+    "To the guy who's basically a superhero in disguise — thanks for always showing up when it matters. Happy birthday!",
+    "Best friends since forever, and I wouldn't trade a single memory. Here's to more of them. Happy birthday!",
+    "A little collage of us, because some memories deserve to be stuck on paper (and screens). Happy birthday!"
+  ]
+};
+document.querySelectorAll('[data-msg-slot]').forEach(el=>{
+  el.textContent = CONFIG.messages[Number(el.dataset.msgSlot)] || '';
+});
+
+/* ---------- build rainbow sticker letters ---------- */
+const titleEl = document.getElementById('hero-title');
+const palette = ['var(--pink)','var(--orange)','var(--sky)','var(--green)','var(--purple)','var(--yellow)'];
+const rotations = [-7,5,-4,8,-6,4,7,-5,6,-3,5,-8];
+const text = titleEl.dataset.text;
+[...text].forEach((ch,i)=>{
+  const span = document.createElement('span');
+  if(ch === ' '){ span.className='space'; titleEl.appendChild(span); return; }
+  span.className = 'letter';
+  span.textContent = ch;
+  span.style.setProperty('--letter-color', palette[i % palette.length]);
+  span.style.setProperty('--r', rotations[i % rotations.length]+'deg');
+  span.style.setProperty('--d', (i*0.045)+'s');
+  titleEl.appendChild(span);
+});
+const letters = titleEl.querySelectorAll('.letter');
+const heroSub = document.getElementById('hero-sub');
+
+/* ---------- confetti ---------- */
+function spawnConfetti(count=70){
+  const colors = ['#FF3D81','#FFD400','#00B4D8','#4CD964','#FF7A00','#9B5DE5'];
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const size = 7 + Math.random()*8;
+    const shape = Math.random() > 0.5 ? '50%' : '2px';
+    el.style.width = size+'px';
+    el.style.height = (size*0.5 + Math.random()*size*0.5)+'px';
+    el.style.borderRadius = shape;
+    el.style.left = Math.random()*100+'vw';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationName = 'confetti-fall';
+    el.style.animationDuration = (2.4 + Math.random()*1.8)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 4400);
+  }
+}
+
+/* ---------- hero reveal ---------- */
+const stage = document.getElementById('reveal-stage');
+const curtain = document.getElementById('flower-curtain');
+let revealed = false;
+
+function playHero(){
+  curtain.classList.add('open');
+  stage.classList.add('revealed');
+  stage.classList.remove('tappable');
+  letters.forEach(l=>l.classList.add('show'));
+  heroSub.classList.add('show');
+  setTimeout(()=>spawnConfetti(70), 500);
+}
+function resetHero(){
+  curtain.classList.remove('open');
+  stage.classList.remove('revealed');
+  letters.forEach(l=>l.classList.remove('show'));
+  heroSub.classList.remove('show');
+  revealed = false;
+  stage.classList.add('tappable');
+}
+stage.classList.add('tappable');
+stage.addEventListener('click', ()=>{
+  if(revealed) return;
+  revealed = true;
+  playHero();
+});
+
+/* ---------- audio toggle ---------- */
+const bgm = document.getElementById('bgm');
+const audioBtn = document.getElementById('audio-toggle');
+const audioIcon = document.getElementById('audio-icon');
+const NOTE_ICON = '<path d="M9 17V5l10-2v12" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="17" r="3" fill="var(--ink)"/><circle cx="16" cy="15" r="3" fill="var(--ink)"/>';
+const PAUSE_ICON = '<rect x="6" y="4" width="4" height="16" rx="1.5" fill="var(--ink)"/><rect x="14" y="4" width="4" height="16" rx="1.5" fill="var(--ink)"/>';
+let playing = false;
+audioBtn.addEventListener('click', ()=>{
+  if(!playing){ bgm.play().catch(()=>{}); audioIcon.innerHTML = PAUSE_ICON; }
+  else { bgm.pause(); audioIcon.innerHTML = NOTE_ICON; }
+  playing = !playing;
+});
+
+/* ---------- cake reveal on scroll ---------- */
+const cakeStage = document.getElementById('cake-stage');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{ if(entry.isIntersecting) cakeStage.classList.add('in-view'); });
+}, { threshold:0.35 });
+io.observe(cakeStage);
+
+/* ---------- blow out candles ---------- */
+const cakeBtn = document.getElementById('cake-btn');
+const cakeSvg = document.getElementById('cake-svg');
+let blown = false;
+function blowCandles(){
+  if(blown) return;
+  blown = true;
+  cakeSvg.classList.add('blown');
+  cakeStage.classList.add('blown-wrap');
+  const rect = cakeBtn.getBoundingClientRect();
+  [0,1,2].forEach((i)=>{
+    setTimeout(()=>{
+      const puff = document.createElement('div');
+      puff.className = 'smoke-puff';
+      const size = 15 + Math.random()*11;
+      puff.style.width = size+'px'; puff.style.height = size+'px';
+      puff.style.left = (rect.left + rect.width*(0.35+i*0.15))+'px';
+      puff.style.top = (rect.top + rect.height*0.18)+'px';
+      document.body.appendChild(puff);
+      setTimeout(()=>puff.remove(), 1500);
+    }, i*120);
+  });
+  spawnConfetti(50);
+}
+function resetCake(){
+  blown = false;
+  cakeSvg.classList.remove('blown');
+  cakeStage.classList.remove('blown-wrap');
+}
+cakeBtn.addEventListener('click', blowCandles);
+
+/* ---------- carousel ---------- */
+const slidesEl = document.getElementById('carousel-slides');
+const slides = slidesEl.children;
+const dotsWrap = document.getElementById('carousel-dots');
+let current = 0;
+for(let i=0;i<slides.length;i++){
+  const dot = document.createElement('button');
+  dot.className = 'dot' + (i===0?' active':'');
+  dot.setAttribute('aria-label', 'Go to message '+(i+1));
+  dot.addEventListener('click', ()=>goTo(i));
+  dotsWrap.appendChild(dot);
+}
+const dots = dotsWrap.children;
+function goTo(i){
+  current = (i + slides.length) % slides.length;
+  slidesEl.style.transform = `translateX(-${current*100}%)`;
+  for(let d=0; d<dots.length; d++) dots[d].classList.toggle('active', d===current);
+}
+document.getElementById('carousel-prev').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('carousel-next').addEventListener('click', ()=>goTo(current+1));
+document.querySelector('.carousel').addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowLeft') goTo(current-1);
+  if(e.key === 'ArrowRight') goTo(current+1);
+});
+let touchStartX = null;
+const track = document.querySelector('.carousel-track');
+track.addEventListener('touchstart', e=> touchStartX = e.touches[0].clientX, {passive:true});
+track.addEventListener('touchend', e=>{
+  if(touchStartX===null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if(Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+  touchStartX = null;
+}, {passive:true});
+
+/* ---------- photo collage upload ---------- */
+const collageInput = document.getElementById('collage-input');
+const collageSlots = document.querySelectorAll('#collage-grid .collage-slot');
+collageInput.addEventListener('change', (e)=>{
+  const files = Array.from(e.target.files).slice(0, collageSlots.length);
+  files.forEach((file, i)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      collageSlots[i].innerHTML = '';
+      const img = document.createElement('img');
+      img.src = reader.result; img.alt = '';
+      collageSlots[i].appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+/* ---------- global reset button ---------- */
+document.getElementById('reset-toggle').addEventListener('click', ()=>{
+  resetHero();
+  resetCake();
+  goTo(0);
+  window.scrollTo({ top:0, behavior:'smooth' });
+  setTimeout(playHero, 700);
+});
+</script>
+
+</body>
+</html>
